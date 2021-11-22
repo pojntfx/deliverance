@@ -42,7 +42,7 @@ jobs:
           automatic_release_tag: unstable
           prerelease: true
           files: |
-            /tmp/out/*
+            /tmp/out/*/*
       - name: Publish release to GitHub releases
         if: startsWith(github.ref, 'refs/tags/v')
         uses: marvinpinto/action-automatic-releases@latest
@@ -50,4 +50,4 @@ jobs:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
           files: |
-            /tmp/out/*
+            /tmp/out/*/*
