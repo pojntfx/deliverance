@@ -43,6 +43,15 @@ jobs:
           prerelease: true
           files: |
             /tmp/out/*/*
+      - name: Publish latest release alias to GitHub releases
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: latest
+          prerelease: false
+          files: |
+            /tmp/out/*/*
       - name: Publish release to GitHub releases
         if: startsWith(github.ref, 'refs/tags/v')
         uses: marvinpinto/action-automatic-releases@latest
