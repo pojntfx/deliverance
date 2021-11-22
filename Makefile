@@ -4,6 +4,7 @@ OUTPUT_DIR ?= out
 # Private variables
 obj = $(shell ls docs/*.md | sed -r 's@docs/(.*).md@\1@g')
 stc = $(shell ls docs/static)
+mta = $(wildcard *.md)
 formats = pdf slides.pdf html slides.html epub odt txt
 all: build
 
@@ -66,7 +67,7 @@ build/metadata:
 	mkdir -p "$(OUTPUT_DIR)"
 	git log > "$(OUTPUT_DIR)"/CHANGELOG.txt
 	cp LICENSE "$(OUTPUT_DIR)"/LICENSE.txt
-	pandoc --shift-heading-level-by=-1 --to markdown --standalone "README.md" | pandoc --to html5 --listings --shift-heading-level-by=1 --number-sections --resource-path=docs --toc --katex --self-contained --number-offset=1 -o "$(OUTPUT_DIR)/README.html"
+	$(foreach mt,$(mta),pandoc --shift-heading-level-by=-1 --to markdown --standalone "$(mt)" | pandoc --to html5 --listings --shift-heading-level-by=1 --number-sections --resource-path=docs --toc --katex --self-contained --number-offset=1 -o "$(OUTPUT_DIR)/$(subst .md,.html,$(mt))";)
 
 # Build QR code
 build/qr:
