@@ -1,5 +1,10 @@
 name: Deliverance
 description: Universal document publishing system.
+inputs:
+  github-token:
+    description: GitHub token (for creating releases and publishing to GitHub pages)
+    required: true
+    default: ""
 runs:
   using: "composite"
   steps:
@@ -8,24 +13,28 @@ runs:
       with:
         fetch-depth: 0
     - name: Set up hydrun
+      shell: bash
       run: |
         curl -L -o /tmp/hydrun "https://github.com/pojntfx/hydrun/releases/latest/download/hydrun.linux-$(uname -m)"
         sudo install /tmp/hydrun /usr/local/bin
     - name: Build with hydrun
+      shell: bash
       run: hydrun -o danteev/texlive "apt update && apt install -y curl python3-pip tree && ./configure && make depend && make -j $(nproc)"
     - name: Fix permissions for output
+      shell: bash
       run: sudo chown -R $USER .
     - name: Publish release archive to GitHub releases
       if: ${{ github.ref == 'refs/heads/main' }}
       uses: marvinpinto/action-automatic-releases@latest
       with:
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        repo_token: "${{ inputs.github-token }}"
         automatic_release_tag: latest
         prerelease: false
         files: |
           out/release.tar.gz
           out/release.zip
     - name: Extract release archive
+      shell: bash
       run: |
         mkdir -p /tmp/gh-pages
         tar xvzf out/release.tar.gz -C /tmp/gh-pages
@@ -33,6 +42,7 @@ runs:
       if: ${{ github.ref == 'refs/heads/main' }}
       uses: JamesIves/github-pages-deploy-action@4.1.0
       with:
+        token: "${{ inputs.github-token }}"
         branch: gh-pages
         folder: /tmp/gh-pages
         git-config-name: GitHub Pages Bot
