@@ -1,7 +1,7 @@
 name: Deliverance
 description: Universal document publishing system.
 inputs:
-  github-token:
+  github_token:
     description: GitHub token (for creating releases and publishing to GitHub pages)
     required: true
     default: ""
@@ -27,7 +27,7 @@ runs:
       if: ${{ github.ref == 'refs/heads/main' }}
       uses: marvinpinto/action-automatic-releases@latest
       with:
-        repo_token: "${{ inputs.github-token }}"
+        repo_token: "${{ inputs.github_token }}"
         automatic_release_tag: latest
         prerelease: false
         files: |
@@ -42,7 +42,7 @@ runs:
       if: ${{ github.ref == 'refs/heads/main' }}
       uses: JamesIves/github-pages-deploy-action@4.1.0
       with:
-        token: "${{ inputs.github-token }}"
+        token: "${{ inputs.github_token }}"
         branch: gh-pages
         folder: /tmp/gh-pages
         git-config-name: GitHub Pages Bot
