@@ -70,7 +70,7 @@ build/metadata:
 # Build QR code
 build/qr:
 	mkdir -p docs/static
-	qr "https://$$(git remote get-url origin | sed -r 's|^.*@(.*):|\1/|g' | sed 's@.*://@@g' | sed 's/.git$$//g')" | tee docs/static/qr.png>/dev/null
+	qr "https://$$(git remote get-url origin | sed -r 's|^.*@(.*):|\1/|g' | sed 's@.*://@@g' | sed 's/.git$$//g')" > docs/static/qr.png
 
 # Build tarball
 build/tarball: build/qr build/metadata
@@ -109,4 +109,4 @@ depend:
 	pip install pillow qrcode md2gemini
 	curl -L -o /tmp/Eisvogel.zip 'https://github.com/Wandmalfarbe/pandoc-latex-template/releases/latest/download/Eisvogel.zip'
 	mkdir -p "$${HOME}/.local/share/pandoc/templates"
-	unzip -p /tmp/Eisvogel.zip eisvogel.latex | tee "$${HOME}/.local/share/pandoc/templates/eisvogel.latex">/dev/null
+	unzip -p /tmp/Eisvogel.zip eisvogel.latex > "$${HOME}/.local/share/pandoc/templates/eisvogel.latex"
