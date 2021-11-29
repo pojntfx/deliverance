@@ -4,6 +4,10 @@ OUTPUT_DIR ?= out
 # Private variables
 obj = $(shell ls docs/*.md | sed -r 's@docs/(.*).md@\1@g')
 mta = $(wildcard *.md)
+changelog_exists = $(wildcard CHANGELOG.txt)
+origin_exists = $(wildcard ORIGIN.txt)
+is_git_repo = $(wildcard .git)
+current_dir = $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 formats = pdf slides.pdf html slides.html epub odt txt
 all: build
 
@@ -52,7 +56,7 @@ $(addprefix build-gmi/,$(obj)): build/qr
 	rm -rf "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi"
 	mkdir -p "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi"
 	cd "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi" && pandoc --to html --standalone --self-contained --resource-path="../../docs" "../../docs/$(subst build-gmi/,,$@).md" | pandoc --read html --to gfm-raw_html --extract-media static | md2gemini -a -p > "$(subst build-gmi/,,$@).gmi"
-	tar czvf "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi.gz" -C "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi" .
+	tar -I 'gzip -9' -cvf "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi.gz" -C "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi" .
 	rm -rf "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi"
 
 # Build txt
@@ -63,31 +67,60 @@ $(addprefix build-txt/,$(obj)): build/qr
 # Build metadata
 build/metadata:
 	mkdir -p "$(OUTPUT_DIR)"
+ifneq ("$(origin_exists)", "")
+	cp ORIGIN.txt "$(OUTPUT_DIR)"/ORIGIN.txt
+else ifneq ("$(is_git_repo)", "")
+	git remote get-url origin > "$(OUTPUT_DIR)"/ORIGIN.txt
+else
+	echo "file://$(current_dir)" > "$(OUTPUT_DIR)"/ORIGIN.txt
+endif
+ifneq ("$(changelog_exists)", "")
+	cp CHANGELOG.txt "$(OUTPUT_DIR)"/CHANGELOG.txt
+else ifneq ("$(is_git_repo)", "")
 	git log > "$(OUTPUT_DIR)"/CHANGELOG.txt
+else
+	touch "$(OUTPUT_DIR)"/CHANGELOG.txt
+endif
 	cp LICENSE "$(OUTPUT_DIR)"/LICENSE.txt
 	$(foreach mt,$(mta),pandoc --shift-heading-level-by=-1 --to markdown --standalone "$(mt)" | pandoc --to html5 --listings --shift-heading-level-by=1 --number-sections --resource-path=docs --toc --katex --self-contained --number-offset=1 -o "$(OUTPUT_DIR)/$(subst .md,.html,$(mt))";)
 
 # Build QR code
 build/qr:
 	mkdir -p docs/static
-	qr "https://$$(git remote get-url origin | sed -r 's|^.*@(.*):|\1/|g' | sed 's@.*://@@g' | sed 's/.git$$//g')" > docs/static/qr.png
+ifneq ("$(origin_exists)", "")
+	qr "$(shell cat ORIGIN.txt)" > docs/static/qr.png
+else ifneq ("$(is_git_repo)", "")
+	qr "https://$(shell git remote get-url origin | sed -r 's|^.*@(.*):|\1/|g' | sed 's@.*://@@g' | sed 's/.git$$//g')" > docs/static/qr.png
+else
+	qr "file://$(current_dir)" > docs/static/qr.png
+endif
 
 # Build tarball
 build/tarball: build/qr build/metadata
 	mkdir -p "$(OUTPUT_DIR)"
-	tar czvf "$(OUTPUT_DIR)"/source.tar.gz --exclude-from=.gitignore --exclude=.git --exclude="$(OUTPUT_DIR)" .
+	tar cvf "$(OUTPUT_DIR)"/source.tar --exclude-from=.gitignore --exclude=.git --exclude="$(OUTPUT_DIR)" .
+	tar uvf "$(OUTPUT_DIR)"/source.tar ./Makefile
+	tar uvf "$(OUTPUT_DIR)"/source.tar -C "$(OUTPUT_DIR)" ./CHANGELOG.txt ./ORIGIN.txt
+	gzip -9 < "$(OUTPUT_DIR)"/source.tar > "$(OUTPUT_DIR)"/source.tar.gz
+	rm "$(OUTPUT_DIR)"/source.tar
 
 # Build tree
 build/tree: $(addprefix build/,$(obj)) build/tarball
 	mkdir -p "$(OUTPUT_DIR)"
-	tree -T "$$(git remote get-url origin | sed -r 's|^.*@(.*):|\1/|g' | sed 's@.*://@@g' | sed 's/.git$$//g')" --du -h -D -H . -I 'index.html|release.tar.gz|release.zip' -o "$(OUTPUT_DIR)"/index.html "$(OUTPUT_DIR)"
+ifneq ("$(origin_exists)", "")
+	tree -T "$(shell cat ORIGIN.txt | sed -r 's|^.*@(.*):|\1/|g' | sed 's@.*://@@g' | sed 's/.git$$//g')" --du -h -D -H . -I 'index.html|release.tar.gz|release.zip' -o "$(OUTPUT_DIR)"/index.html "$(OUTPUT_DIR)"
+else ifneq ("$(is_git_repo)", "")
+	tree -T "$(shell git remote get-url origin | sed -r 's|^.*@(.*):|\1/|g' | sed 's@.*://@@g' | sed 's/.git$$//g')" --du -h -D -H . -I 'index.html|release.tar.gz|release.zip' -o "$(OUTPUT_DIR)"/index.html "$(OUTPUT_DIR)"
+else
+	tree -T "$(notdir $(patsubst %/,%,$(current_dir)))" --du -h -D -H . -I 'index.html|release.tar.gz|release.zip' -o "$(OUTPUT_DIR)"/index.html "$(OUTPUT_DIR)"
+endif
 
 # Build archive
 build/archive: build/tree
 	mkdir -p "$(OUTPUT_DIR)"
-	tar czvf "$(OUTPUT_DIR)"/release.tar.gz -C "$(OUTPUT_DIR)" --exclude="release.tar.gz" --exclude="release.zip" $(shell ls $(OUTPUT_DIR))
+	tar -I 'gzip -9' -cvf "$(OUTPUT_DIR)"/release.tar.gz -C "$(OUTPUT_DIR)" --exclude="release.tar.gz" --exclude="release.zip" $(shell ls $(OUTPUT_DIR))
 	rm -f "$(OUTPUT_DIR)"/release.zip
-	zip -j -x 'release.tar.gz' -x 'release.zip' -FSr "$(OUTPUT_DIR)"/release.zip "$(OUTPUT_DIR)"/*
+	zip -9 -j -x 'release.tar.gz' -x 'release.zip' -FSr "$(OUTPUT_DIR)"/release.zip "$(OUTPUT_DIR)"/*
 
 # Open
 $(foreach o,$(obj),$(foreach f,$(formats),open-$(f)/$(o))):
