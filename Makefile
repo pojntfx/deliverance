@@ -3,7 +3,6 @@ OUTPUT_DIR ?= out
 
 # Private variables
 obj = $(shell ls docs/*.md | sed -r 's@docs/(.*).md@\1@g')
-stc = $(shell ls docs/static)
 mta = $(wildcard *.md)
 formats = pdf slides.pdf html slides.html epub odt txt
 all: build
@@ -51,9 +50,8 @@ $(addprefix build-md/,$(obj)): build/qr
 # Build Gemtext
 $(addprefix build-gmi/,$(obj)): build/qr
 	rm -rf "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi"
-	mkdir -p "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi/static"
-	md2gemini --frontmatter -d "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi" -w "docs/$(subst build-gmi/,,$@).md"
-	$(foreach st,$(stc),cp docs/static/$(st) "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi/static/$(st)";)
+	mkdir -p "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi"
+	cd "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi" && pandoc --to html --standalone --self-contained --resource-path="../../docs" "../../docs/$(subst build-gmi/,,$@).md" | pandoc --read html --to gfm-raw_html --extract-media static | md2gemini -a -p > "$(subst build-gmi/,,$@).gmi"
 	tar czvf "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi.gz" -C "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi" .
 	rm -rf "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi"
 
