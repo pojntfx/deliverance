@@ -55,7 +55,7 @@ $(addprefix build-md/,$(obj)): build/qr
 $(addprefix build-gmi/,$(obj)): build/qr
 	rm -rf "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi"
 	mkdir -p "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi"
-	cd "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi" && pandoc --to html --standalone --extract-media static --resource-path="../../docs" "../../docs/$(subst build-gmi/,,$@).md" | pandoc --read html --to gfm-raw_html | md2gemini -a -p | sed -e 's@^=> static/static/@=>static/@g' > "$(subst build-gmi/,,$@).gmi" && [ -d static/static ] && mv -f static/static/* static/ && rm -rf static/static
+	cd "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi" && pandoc --to html --extract-media static --metadata title="intermediate" --resource-path="../../docs" "../../docs/$(subst build-gmi/,,$@).md" | pandoc --read html --to gfm-raw_html | md2gemini -a -p | sed -e 's@^=> static/static/@=>static/@g' > "$(subst build-gmi/,,$@).gmi" && [ -d static/static ] && mv -f static/static/* static/; rm -rf static/static
 	tar -I 'gzip -9' -cvf "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi.gz" -C "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi" .
 	rm -rf "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi"
 
@@ -143,3 +143,5 @@ depend:
 	curl -L -o /tmp/Eisvogel.zip 'https://github.com/Wandmalfarbe/pandoc-latex-template/releases/latest/download/Eisvogel.zip'
 	mkdir -p "$${HOME}/.local/share/pandoc/templates"
 	unzip -p /tmp/Eisvogel.zip eisvogel.latex > "$${HOME}/.local/share/pandoc/templates/eisvogel.latex"
+
+
