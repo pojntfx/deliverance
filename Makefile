@@ -19,12 +19,12 @@ $(addprefix build/,$(obj)):
 # Build PDF
 $(addprefix build-pdf/,$(obj)): build/qr
 	mkdir -p "$(OUTPUT_DIR)"
-	pandoc --template eisvogel --listings --shift-heading-level-by=-1 --number-sections --resource-path=docs -M titlepage=true -M toc=true -M toc-own-page=true -M linkcolor="{HTML}{006666}" -o "$(OUTPUT_DIR)/$(subst build-pdf/,,$@).pdf" "docs/$(subst build-pdf/,,$@).md"
+	pandoc --template eisvogel --listings --shift-heading-level-by=-1 --number-sections --resource-path=docs -M titlepage=true -M toc=true -M toc-own-page=true -M linkcolor="{HTML}{006666}" --pdf-engine=xelatex -o "$(OUTPUT_DIR)/$(subst build-pdf/,,$@).pdf" "docs/$(subst build-pdf/,,$@).md"
 	
 # Build PDF slides
 $(addprefix build-slides.pdf/,$(obj)): build/qr
 	mkdir -p "$(OUTPUT_DIR)"
-	pandoc --to beamer --listings --shift-heading-level-by=-1 --number-sections --resource-path=docs --slide-level=3 --variable theme=metropolis -o "$(OUTPUT_DIR)/$(subst build-slides.pdf/,,$@).slides.pdf" "docs/$(subst build-slides.pdf/,,$@).md"
+	pandoc --to beamer --listings --shift-heading-level-by=-1 --number-sections --resource-path=docs --slide-level=3 --variable theme=metropolis --pdf-engine=xelatex -o "$(OUTPUT_DIR)/$(subst build-slides.pdf/,,$@).slides.pdf" "docs/$(subst build-slides.pdf/,,$@).md"
 
 # Build HTML
 $(addprefix build-html/,$(obj)): build/qr
@@ -55,7 +55,7 @@ $(addprefix build-md/,$(obj)): build/qr
 $(addprefix build-gmi/,$(obj)): build/qr
 	rm -rf "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi"
 	mkdir -p "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi"
-	cd "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi" && pandoc --to html --standalone --self-contained --resource-path="../../docs" "../../docs/$(subst build-gmi/,,$@).md" | pandoc --read html --to gfm-raw_html --extract-media static | md2gemini -a -p > "$(subst build-gmi/,,$@).gmi"
+	cd "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi" && pandoc --to html --standalone --extract-media static --resource-path="../../docs" "../../docs/$(subst build-gmi/,,$@).md" | pandoc --read html --to gfm-raw_html | md2gemini -a -p | sed -e 's@^=> static/static/@=>static/@g' > "$(subst build-gmi/,,$@).gmi" && mv -f static/static/* static/ && rm -rf static/static
 	tar -I 'gzip -9' -cvf "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi.gz" -C "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi" .
 	rm -rf "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi"
 
