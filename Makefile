@@ -14,7 +14,7 @@ all: build
 # Build
 build: build/archive
 $(addprefix build/,$(obj)):
-	$(MAKE) build-pdf/$(subst build/,,$@) build-slides.pdf/$(subst build/,,$@) build-html/$(subst build/,,$@) build-slides.html/$(subst build/,,$@) build-epub/$(subst build/,,$@) build-odt/$(subst build/,,$@) build-md/$(subst build/,,$@) build-gmi/$(subst build/,,$@) build-txt/$(subst build/,,$@)
+	$(MAKE) build-pdf/$(subst build/,,$@) build-slides.pdf/$(subst build/,,$@) build-html/$(subst build/,,$@) build-slides.html/$(subst build/,,$@) build-epub/$(subst build/,,$@) build-odt/$(subst build/,,$@) build-gmi/$(subst build/,,$@) build-txt/$(subst build/,,$@)
 
 # Build PDF
 $(addprefix build-pdf/,$(obj)): build/qr
@@ -45,11 +45,6 @@ $(addprefix build-epub/,$(obj)): build/qr
 $(addprefix build-odt/,$(obj)): build/qr
 	mkdir -p "$(OUTPUT_DIR)"
 	pandoc --listings --shift-heading-level-by=-1 --number-sections --resource-path=docs -M titlepage=true -M toc=true -M toc-own-page=true -M linkcolor="{HTML}{006666}" -o "$(OUTPUT_DIR)/$(subst build-odt/,,$@).odt" "docs/$(subst build-odt/,,$@).md"
-
-# Build Markdown
-$(addprefix build-md/,$(obj)): build/qr
-	mkdir -p "$(OUTPUT_DIR)"
-	pandoc --to html --shift-heading-level-by=-1 --standalone --self-contained --resource-path=docs "docs/$(subst build-md/,,$@).md" | pandoc --read html --to gfm --listings --shift-heading-level-by=1 --number-sections --resource-path=docs --toc --katex --self-contained --number-offset=1 -o "$(OUTPUT_DIR)/$(subst build-md/,,$@).md"
 
 # Build Gemtext
 $(addprefix build-gmi/,$(obj)): build/qr
