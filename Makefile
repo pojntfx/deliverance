@@ -19,45 +19,45 @@ $(addprefix build/,$(obj)):
 # Build PDF
 $(addprefix build-pdf/,$(obj)): build/qr
 	mkdir -p "$(OUTPUT_DIR)"
-	pandoc --template eisvogel --listings --shift-heading-level-by=-1 --number-sections --resource-path=docs -M titlepage=true -M toc=true -M toc-own-page=true -M linkcolor="{HTML}{006666}" --pdf-engine=xelatex -o "$(OUTPUT_DIR)/$(subst build-pdf/,,$@).pdf" "docs/$(subst build-pdf/,,$@).md"
+	pandoc --template eisvogel --citeproc --listings --shift-heading-level-by=-1 --number-sections --resource-path=docs -M titlepage=true -M toc=true -M toc-own-page=true -M linkcolor=midnightblue --pdf-engine=xelatex -o "$(OUTPUT_DIR)/$(subst build-pdf/,,$@).pdf" "docs/$(subst build-pdf/,,$@).md"
 	
 # Build PDF slides
 $(addprefix build-slides.pdf/,$(obj)): build/qr
 	mkdir -p "$(OUTPUT_DIR)"
-	pandoc --to beamer --listings --shift-heading-level-by=-1 --number-sections --resource-path=docs --slide-level=3 --variable theme=metropolis --pdf-engine=xelatex -o "$(OUTPUT_DIR)/$(subst build-slides.pdf/,,$@).slides.pdf" "docs/$(subst build-slides.pdf/,,$@).md"
+	pandoc --to beamer --citeproc --listings --shift-heading-level-by=-1 --number-sections --resource-path=docs --slide-level=3 --variable theme=metropolis --pdf-engine=xelatex -o "$(OUTPUT_DIR)/$(subst build-slides.pdf/,,$@).slides.pdf" "docs/$(subst build-slides.pdf/,,$@).md"
 
 # Build HTML
 $(addprefix build-html/,$(obj)): build/qr
 	mkdir -p "$(OUTPUT_DIR)"
-	pandoc --to markdown --shift-heading-level-by=-1 --standalone "docs/$(subst build-html/,,$@).md" | pandoc --to html5 --listings --shift-heading-level-by=1 --number-sections --resource-path=docs --toc --katex --self-contained --number-offset=1 -o "$(OUTPUT_DIR)/$(subst build-html/,,$@).html"
+	pandoc --to markdown --shift-heading-level-by=-1 --resource-path=docs --standalone "docs/$(subst build-html/,,$@).md" | pandoc --to html5 --citeproc --listings --shift-heading-level-by=1 --number-sections --resource-path=docs --toc --katex --self-contained --number-offset=1 -o "$(OUTPUT_DIR)/$(subst build-html/,,$@).html"
 
 # Build HTML slides
 $(addprefix build-slides.html/,$(obj)): build/qr
 	mkdir -p "$(OUTPUT_DIR)"
-	pandoc --to slidy --listings --shift-heading-level-by=-1 --number-sections --resource-path=docs --toc --katex --self-contained -o "$(OUTPUT_DIR)/$(subst build-slides.html/,,$@).slides.html" "docs/$(subst build-slides.html/,,$@).md"
+	pandoc --to slidy --citeproc --listings --shift-heading-level-by=-1 --number-sections --resource-path=docs --toc --katex --self-contained -o "$(OUTPUT_DIR)/$(subst build-slides.html/,,$@).slides.html" "docs/$(subst build-slides.html/,,$@).md"
 
 # Build EPUB
 $(addprefix build-epub/,$(obj)): build/qr
 	mkdir -p "$(OUTPUT_DIR)"
-	pandoc --listings --shift-heading-level-by=-1 --number-sections --resource-path=docs -M titlepage=true -M toc=true -M toc-own-page=true -M linkcolor="{HTML}{006666}" -o "$(OUTPUT_DIR)/$(subst build-epub/,,$@).epub" "docs/$(subst build-epub/,,$@).md"
+	pandoc --to epub --citeproc --listings --shift-heading-level-by=-1 --number-sections --resource-path=docs -M titlepage=true -M toc=true -M toc-own-page=true -M linkcolor=midnightblue -o "$(OUTPUT_DIR)/$(subst build-epub/,,$@).epub" "docs/$(subst build-epub/,,$@).md"
 
 # Build ODT
 $(addprefix build-odt/,$(obj)): build/qr
 	mkdir -p "$(OUTPUT_DIR)"
-	pandoc --listings --shift-heading-level-by=-1 --number-sections --resource-path=docs -M titlepage=true -M toc=true -M toc-own-page=true -M linkcolor="{HTML}{006666}" -o "$(OUTPUT_DIR)/$(subst build-odt/,,$@).odt" "docs/$(subst build-odt/,,$@).md"
+	pandoc --to odt --citeproc --listings --shift-heading-level-by=-1 --number-sections --resource-path=docs -M titlepage=true -M toc=true -M toc-own-page=true -M linkcolor=midnightblue -o "$(OUTPUT_DIR)/$(subst build-odt/,,$@).odt" "docs/$(subst build-odt/,,$@).md"
 
 # Build Gemtext
 $(addprefix build-gmi/,$(obj)): build/qr
 	rm -rf "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi"
 	mkdir -p "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi"
-	cd "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi" && pandoc --to html --extract-media static --metadata title="intermediate" --resource-path="../../docs" "../../docs/$(subst build-gmi/,,$@).md" | pandoc --read html --to gfm-raw_html | md2gemini -a -p | sed -e 's@^=> static/static/@=>static/@g' > "$(subst build-gmi/,,$@).gmi" && [ -d static/static ] && mv -f static/static/* static/; rm -rf static/static
+	cd "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi" && pandoc --to html --citeproc --extract-media static --metadata title="intermediate" --resource-path="../../docs" "../../docs/$(subst build-gmi/,,$@).md" | pandoc --read html --to gfm-raw_html | md2gemini -a -p -s | sed -e 's@^=> static/static/@=>static/@g' > "$(subst build-gmi/,,$@).gmi" && [ -d static/static ] && mv -f static/static/* static/; rm -rf static/static
 	tar -I 'gzip -9' -cvf "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi.gz" -C "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi" .
 	rm -rf "$(OUTPUT_DIR)/$(subst build-gmi/,,$@).gmi"
 
 # Build txt
 $(addprefix build-txt/,$(obj)): build/qr
 	mkdir -p "$(OUTPUT_DIR)"
-	pandoc --to plain --listings --shift-heading-level-by=-1 --number-sections --resource-path=docs --toc --self-contained -o "$(OUTPUT_DIR)/$(subst build-txt/,,$@).txt" "docs/$(subst build-txt/,,$@).md"
+	pandoc --to plain --citeproc --listings --shift-heading-level-by=-1 --number-sections --resource-path=docs --toc --self-contained -o "$(OUTPUT_DIR)/$(subst build-txt/,,$@).txt" "docs/$(subst build-txt/,,$@).md"
 
 # Build metadata
 build/metadata:
@@ -77,7 +77,7 @@ else
 	touch "$(OUTPUT_DIR)"/CHANGELOG.txt
 endif
 	cp LICENSE "$(OUTPUT_DIR)"/LICENSE.txt
-	$(foreach mt,$(mta),pandoc --shift-heading-level-by=-1 --to markdown --standalone "$(mt)" | pandoc --to html5 --listings --shift-heading-level-by=1 --number-sections --resource-path=docs --toc --katex --self-contained --number-offset=1 -o "$(OUTPUT_DIR)/$(subst .md,.html,$(mt))";)
+	$(foreach mt,$(mta),pandoc --to markdown --shift-heading-level-by=-1 --standalone "$(mt)" | pandoc --to html5 --citeproc --listings --shift-heading-level-by=1 --number-sections --resource-path=docs --toc --katex --self-contained --number-offset=1 -o "$(OUTPUT_DIR)/$(subst .md,.html,$(mt))";)
 
 # Build QR code
 build/qr:
@@ -138,5 +138,3 @@ depend:
 	curl -L -o /tmp/Eisvogel.zip 'https://github.com/Wandmalfarbe/pandoc-latex-template/releases/latest/download/Eisvogel.zip'
 	mkdir -p "$${HOME}/.local/share/pandoc/templates"
 	unzip -p /tmp/Eisvogel.zip eisvogel.latex > "$${HOME}/.local/share/pandoc/templates/eisvogel.latex"
-
-
