@@ -103,11 +103,11 @@ build/tarball: build/qr build/metadata
 build/tree: $(addprefix build/,$(obj)) build/tarball
 	mkdir -p "$(OUTPUT_DIR)"
 ifneq ("$(origin_exists)", "")
-	tree -T "$(shell cat ORIGIN.txt | sed -r 's|^.*@(.*):|\1/|g' | sed 's@.*://@@g' | sed 's/.git$$//g')" --du -h -D -H . -I 'index.html|release.tar.gz|release.zip' -o "$(OUTPUT_DIR)"/index.html "$(OUTPUT_DIR)"
+	cd "$(OUTPUT_DIR)" && tree -T "$(shell cat ORIGIN.txt | sed -r 's|^.*@(.*):|\1/|g' | sed 's@.*://@@g' | sed 's/.git$$//g')" --du -h -D -H . -I 'index.html|release.tar.gz|release.zip' -o "index.html"
 else ifneq ("$(is_git_repo)", "")
-	tree -T "$(shell git remote get-url origin | sed -r 's|^.*@(.*):|\1/|g' | sed 's@.*://@@g' | sed 's/.git$$//g')" --du -h -D -H . -I 'index.html|release.tar.gz|release.zip' -o "$(OUTPUT_DIR)"/index.html "$(OUTPUT_DIR)"
+	cd "$(OUTPUT_DIR)" && tree -T "$(shell git remote get-url origin | sed -r 's|^.*@(.*):|\1/|g' | sed 's@.*://@@g' | sed 's/.git$$//g')" --du -h -D -H . -I 'index.html|release.tar.gz|release.zip' -o "index.html"
 else
-	tree -T "$(notdir $(patsubst %/,%,$(current_dir)))" --du -h -D -H . -I 'index.html|release.tar.gz|release.zip' -o "$(OUTPUT_DIR)"/index.html "$(OUTPUT_DIR)"
+	cd "$(OUTPUT_DIR)" && tree -T "$(notdir $(patsubst %/,%,$(current_dir)))" --du -h -D -H . -I 'index.html|release.tar.gz|release.zip' -o "index.html"
 endif
 
 # Build archive
