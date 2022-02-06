@@ -5,6 +5,10 @@ inputs:
     description: GitHub token (for creating releases and publishing to GitHub pages)
     required: true
     default: ""
+  disable_pdf_slides:
+    description: Disable PDF slide generation
+    required: false
+    default: false
 runs:
   using: "composite"
   steps:
@@ -19,7 +23,7 @@ runs:
         sudo install /tmp/hydrun /usr/local/bin
     - name: Build with hydrun
       shell: bash
-      run: hydrun -o danteev/texlive "apt update && apt install -y curl python3-pip tree && ./configure && make depend && make -j $(nproc)"
+      run: hydrun -o danteev/texlive "apt update && apt install -y curl python3-pip tree && ./configure && make depend && make -j $(nproc) DISABLE_PDF_SLIDES=${{ inputs.github_token }}"
     - name: Fix permissions for output
       shell: bash
       run: sudo chown -R $USER .
