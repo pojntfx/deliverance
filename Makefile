@@ -23,8 +23,12 @@ $(addprefix build-pdf/,$(obj)): build/qr
 	
 # Build PDF slides
 $(addprefix build-slides.pdf/,$(obj)): build/qr
+ifeq ($(DISABLE_PDF_SLIDES),true)
+	exit 0
+else
 	mkdir -p "$(OUTPUT_DIR)"
 	pandoc --to beamer --citeproc --listings --shift-heading-level-by=-1 --number-sections --resource-path=docs --slide-level=3 --variable theme=metropolis --pdf-engine=xelatex -o "$(OUTPUT_DIR)/$(subst build-slides.pdf/,,$@).slides.pdf" "docs/$(subst build-slides.pdf/,,$@).md"
+endif
 
 # Build HTML
 $(addprefix build-html/,$(obj)): build/qr
