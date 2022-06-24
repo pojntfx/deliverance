@@ -8,6 +8,6 @@ Universal document publishing system.
 
 ## License
 
-Deliverance (c) 2021 Felix Pojtinger and contributors
+Deliverance (c) 2021 Felicitas Pojtinger and contributors
 
 SPDX-License-Identifier: AGPL-3.0
