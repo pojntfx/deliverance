@@ -19,7 +19,7 @@ $(addprefix build/,$(obj)):
 # Build PDF
 $(addprefix build-pdf/,$(obj)): build/qr
 	mkdir -p "$(OUTPUT_DIR)"
-	pandoc --template eisvogel --citeproc --listings --shift-heading-level-by=-1 --number-sections --resource-path=docs -M titlepage=true -M toc=true -M toc-own-page=true -M linkcolor=midnightblue --pdf-engine=xelatex -o "$(OUTPUT_DIR)/$(subst build-pdf/,,$@).pdf" "docs/$(subst build-pdf/,,$@).md"
+	pandoc --template eisvogel --citeproc --listings --shift-heading-level-by=-1 --number-sections --resource-path=docs -M titlepage=true -M toc=true -M toc-own-page=true -M linkcolor=blue --pdf-engine=xelatex -o "$(OUTPUT_DIR)/$(subst build-pdf/,,$@).pdf" "docs/$(subst build-pdf/,,$@).md"
 	
 # Build PDF slides
 $(addprefix build-slides.pdf/,$(obj)): build/qr
@@ -43,12 +43,12 @@ $(addprefix build-slides.html/,$(obj)): build/qr
 # Build EPUB
 $(addprefix build-epub/,$(obj)): build/qr
 	mkdir -p "$(OUTPUT_DIR)"
-	pandoc --to epub --citeproc --listings --shift-heading-level-by=-1 --number-sections --resource-path=docs -M titlepage=true -M toc=true -M toc-own-page=true -M linkcolor=midnightblue -o "$(OUTPUT_DIR)/$(subst build-epub/,,$@).epub" "docs/$(subst build-epub/,,$@).md"
+	pandoc --to epub --citeproc --listings --shift-heading-level-by=-1 --number-sections --resource-path=docs -M titlepage=true -M toc=true -M toc-own-page=true -M linkcolor=blue -o "$(OUTPUT_DIR)/$(subst build-epub/,,$@).epub" "docs/$(subst build-epub/,,$@).md"
 
 # Build ODT
 $(addprefix build-odt/,$(obj)): build/qr
 	mkdir -p "$(OUTPUT_DIR)"
-	pandoc --to odt --citeproc --listings --shift-heading-level-by=-1 --number-sections --resource-path=docs -M titlepage=true -M toc=true -M toc-own-page=true -M linkcolor=midnightblue -o "$(OUTPUT_DIR)/$(subst build-odt/,,$@).odt" "docs/$(subst build-odt/,,$@).md"
+	pandoc --to odt --citeproc --listings --shift-heading-level-by=-1 --number-sections --resource-path=docs -M titlepage=true -M toc=true -M toc-own-page=true -M linkcolor=blue -o "$(OUTPUT_DIR)/$(subst build-odt/,,$@).odt" "docs/$(subst build-odt/,,$@).md"
 
 # Build Gemtext
 $(addprefix build-gmi/,$(obj)): build/qr
