@@ -23,7 +23,7 @@ runs:
         sudo install /tmp/hydrun /usr/local/bin
     - name: Build with hydrun
       shell: bash
-      run: hydrun -o danteev/texlive "apt update && apt install -y curl python3-pip tree && ./configure && make depend && make -j $(nproc) DISABLE_PDF_SLIDES=${{ inputs.disable_pdf_slides }}"
+      run: hydrun -o texlive/texlive "apt update && apt install -y curl pandoc node-katex zip python3-pip tree && ./configure && make depend && make -j $(nproc) DISABLE_PDF_SLIDES=${{ inputs.disable_pdf_slides }}"
     - name: Fix permissions for output
       shell: bash
       run: sudo chown -R $USER .
