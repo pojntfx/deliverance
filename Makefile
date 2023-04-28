@@ -138,7 +138,7 @@ clean:
 
 # Dependencies
 depend:
-	pip install pillow qrcode md2gemini
+	pip install pillow qrcode md2gemini --break-system-packages
 	curl -L -o /tmp/Eisvogel.zip 'https://github.com/Wandmalfarbe/pandoc-latex-template/releases/latest/download/Eisvogel.zip'
 	mkdir -p "$${HOME}/.local/share/pandoc/templates"
 	unzip -p /tmp/Eisvogel.zip eisvogel.latex > "$${HOME}/.local/share/pandoc/templates/eisvogel.latex"
