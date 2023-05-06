@@ -1,5 +1,7 @@
 # Deliverance
 
+![Logo](./docs/logo-readme.png)
+
 Universal document publishing system.
 
 ## Overview
@@ -8,6 +10,6 @@ Universal document publishing system.
 
 ## License
 
-Deliverance (c) 2021 Felicitas Pojtinger and contributors
+Deliverance (c) 2023 Felicitas Pojtinger and contributors
 
 SPDX-License-Identifier: AGPL-3.0
