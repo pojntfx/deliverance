@@ -13,7 +13,7 @@ runs:
   using: "composite"
   steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
     - name: Set up hydrun
@@ -29,6 +29,7 @@ runs:
       run: sudo chown -R $USER .
     - name: Publish release archive to GitHub releases
       if: ${{ github.ref == 'refs/heads/main' }}
+      # TODO: Port this to `softprops/action-gh-release@v2` at some point
       uses: marvinpinto/action-automatic-releases@latest
       with:
         repo_token: "${{ inputs.github_token }}"
@@ -44,7 +45,7 @@ runs:
         tar xvzf out/release.tar.gz -C /tmp/gh-pages
     - name: Publish release to GitHub pages
       if: ${{ github.ref == 'refs/heads/main' }}
-      uses: JamesIves/github-pages-deploy-action@4.1.0
+      uses: JamesIves/github-pages-deploy-action@4.6.3
       with:
         token: "${{ inputs.github_token }}"
         branch: gh-pages

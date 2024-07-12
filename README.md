@@ -1,8 +1,10 @@
+<img alt="Project icon" style="vertical-align: middle;" src="./docs/icon.svg" width="128" height="128" align="left">
+
 # Deliverance
 
-![Logo](./docs/logo-readme.png)
-
 Universal document publishing system.
+
+<br/>
 
 [![copy CI](https://github.com/pojntfx/deliverance/actions/workflows/copy.yaml/badge.svg)](https://github.com/pojntfx/deliverance/actions/workflows/copy.yaml)
 [![Matrix](https://img.shields.io/matrix/deliverance:matrix.org)](https://matrix.to/#/#deliverance:matrix.org?via=matrix.org)
@@ -13,7 +15,7 @@ Universal document publishing system.
 
 Deliverance is a minimal (a single `Makefile`) digital publishing system that intents to make distributing self-contained documents, whether these are study notes, research papers, lab reports or even a bachelor's thesis, trivial. It has been in use for multiple years to create reports and study materials at [Media University Stuttgart](https://www.hdm-stuttgart.de/index_html).
 
-It enables you too ...
+It enables you to:
 
 - **Publish using Markdown**: By using the well-supported Markdown format as its input language, Deliverance easily fits into your existing workflow.
 - **Support many output formats without complicated configuration**: By default, Deliverance builds into many output formats at once - including PDF, HTML, EPUB, TXT, Gemini, ODT, DOCX, various slide formats and more!
@@ -43,7 +45,7 @@ To make getting started with Deliverance easier, take a look at the following ex
 - **Lab Reports**:
   - [uni-netpractice-notes](https://github.com/pojntfx/uni-netpractice-notes): Notes for the Praktikum Rechnernetze (networking practice) course at HdM Stuttgart (2022) ([published document](https://pojntfx.github.io/uni-netpractice-notes/)).
 
-## Usage
+## Tutorial
 
 > TL;DR: Create a `configure` script, write your documents in Markdown, and publish to the web with the GitHub action
 
@@ -165,6 +167,6 @@ Have any questions or need help? Chat with us [on Matrix](https://matrix.to/#/#d
 
 ## License
 
-Deliverance (c) 2023 Felicitas Pojtinger and contributors
+Deliverance (c) 2024 Felicitas Pojtinger and contributors
 
 SPDX-License-Identifier: AGPL-3.0
